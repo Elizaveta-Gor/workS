@@ -2,11 +2,15 @@ package ru.netology;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
+import java.io.File;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import static com.codeborne.selenide.Selenide.*;
 
 public class CardDeliveryTest {
+
     String generateDate(int days) {
         return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
@@ -23,7 +28,29 @@ public class CardDeliveryTest {
         Configuration.holdBrowserOpen = false;
         Configuration.headless = true;
         Configuration.browserBinary = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+
+        // Уникальная временная директория профиля Chrome
+        String userDataDir = System.getProperty("java.io.tmpdir") + "/chrome-profile-" + System.currentTimeMillis();
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--disable-extensions");
+        options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--user-data-dir=" + userDataDir);
+        options.addArguments("--window-size=1366,768");
+
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+        Configuration.browserCapabilities = capabilities;
+
         open("http://localhost:9999");
+    }
+
+    @AfterEach
+    void tearDown() {
+        WebDriverRunner.closeWebDriver();
     }
 
     @Test
@@ -80,5 +107,3 @@ public class CardDeliveryTest {
                 .shouldHave(Condition.text("Встреча успешно забронирована на " + date));
     }
 }
-
-
