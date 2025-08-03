@@ -21,7 +21,14 @@ jobs:
       - name: Start SUT
         run: |
           java -jar ./artifacts/app-card-delivery.jar &
-          sleep 30  
+          sleep 10
 
       - name: Run tests with Gradle (headless mode)
         run: ./gradlew test --info -Dselenide.headless=true
+
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: build/reports/tests/test
