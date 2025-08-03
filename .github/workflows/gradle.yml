@@ -21,7 +21,7 @@ jobs:
       - name: Start SUT
         run: |
           java -jar ./artifacts/app-card-delivery.jar &
-          sleep 10   # <-- вот эта задержка важна!
+          sleep 10  
 
       - name: Run tests with Gradle (headless mode)
         run: ./gradlew test --info -Dselenide.headless=true
