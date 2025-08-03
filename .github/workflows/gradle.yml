@@ -19,8 +19,9 @@ jobs:
         run: chmod +x gradlew
 
       - name: Start SUT
-        # Запускаем целевой сервис в фоне
-        run: java -jar ./artifacts/app-card-delivery.jar &
+        run: |
+          java -jar ./artifacts/app-card-delivery.jar &
+          sleep 10   # <-- вот эта задержка важна!
 
       - name: Run tests with Gradle (headless mode)
         run: ./gradlew test --info -Dselenide.headless=true
